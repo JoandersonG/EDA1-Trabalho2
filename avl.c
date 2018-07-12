@@ -76,6 +76,7 @@ no* inserir_no(arv *T, no*x, no*z){
   }
   if(x==NULL){
     //significa que a arv está vazia
+    printf("árvore estava vazia, inseri %d\n",z->cod_cli);
     T->raiz=z;
     return x;
   }
