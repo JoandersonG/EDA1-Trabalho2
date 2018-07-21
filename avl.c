@@ -22,6 +22,8 @@ arv* criar_arv(){
   if(T==NULL){
     printf("Erro 1 em criar_arv\n");
   }
+  T->raiz=NULL;
+  T->alt=0;
   return T;
 }
 int elaborar_enviar_no(arv* T,int cod_cli,int valor,int op){
@@ -31,6 +33,7 @@ int elaborar_enviar_no(arv* T,int cod_cli,int valor,int op){
   }
   no* aux=busca(T->raiz,cod_cli);
   if(aux!=NULL){
+    //se já existe tal nó na árvore:
     aux->qtd_op++;
     if(op==1){//saque
       aux->saldo-=valor;
@@ -40,13 +43,13 @@ int elaborar_enviar_no(arv* T,int cod_cli,int valor,int op){
     }
     return 1;
   }
+  //se não existe o nó ainda:
   no* n=(no*)malloc(sizeof(no));
   n->cod_cli=cod_cli;
   if(op==1){//saque
     n->saldo=0-valor;
   }
   else{//depósito
-    //0800 727 9096 advocacia Elinatti
     n->saldo=valor;
   }
   n->qtd_op=1;
@@ -58,6 +61,9 @@ int elaborar_enviar_no(arv* T,int cod_cli,int valor,int op){
   return 1;
 }
 no* busca(no* raiz,int cod_cli){
+  if(raiz==NULL){
+    return raiz;
+  }
   if(raiz->cod_cli==cod_cli){
     return raiz;
   }
@@ -69,14 +75,15 @@ no* busca(no* raiz,int cod_cli){
   }
 }
 no* inserir_no(arv *T, no*x, no*z){
-  if(T=NULL){
+  if(T==NULL){
     printf("erro 1 em inserir_no\n");
     no* erro=NULL;
     return erro;
   }
-  if(x==NULL){
+  //printf("Entrou aqui antes de dar erro\n");
+  if(T->raiz==NULL){
     //significa que a arv está vazia
-    printf("árvore estava vazia, inseri %d\n",z->cod_cli);
+    //printf("árvore estava vazia, inseri %d\n",z->cod_cli);
     T->raiz=z;
     return x;
   }
@@ -106,17 +113,14 @@ no* inserir_no(arv *T, no*x, no*z){
   }
   return x;
 }
-int balanceamento(arv *T,no *x){
-  if(T==NULL){
-    printf("Erro 1 em balanceamento\n");
-    return -1;
-  }
+int balanceamento(arv* T,no *x){
   if(x==NULL){
     printf("Erro 2 em balanceamento\n");
     return -1;
   }
+  no* y;
   if(balanco(x)==-2){
-    no* y=x->dir;
+    y=x->dir;
     if(balanco(y)==1){
       x=rot_dupla_esq(T,x);
     }
@@ -124,6 +128,20 @@ int balanceamento(arv *T,no *x){
       x=rot_simples_esq(T,x);
     }
   }
+  else if(balanco(x)==2){
+    y=x->esq;
+    if(balanco(y)==-1){
+      x=rot_dupla_dir(T,x);
+    }
+    else{
+      x=rot_simples_dir(T,x);
+    }
+  }
+  return 1;//ou x?????
+
+
+  //////////////////////////
+  /*
   else{
     no* y=x->esq;
     if(balanco(y)==-1){
@@ -134,6 +152,7 @@ int balanceamento(arv *T,no *x){
     }
   }
   return 1;
+  */
 }
 no* rot_dupla_esq(arv *T, no* x){
   if(T==NULL){
@@ -168,19 +187,17 @@ no* rot_simples_esq(arv* T, no*x){
   if(x->pai==NULL){
     T->raiz=y;
   }
+  else if(x==x->pai->esq){
+      x->pai->esq=y;
+    }
   else{
-    if(x==x->pai->esq){
-      x->pai->esq=x;
+      x->pai->dir=y;
     }
-    else{
-      x->pai->dir=x;
-    }
-  }
   y->esq=x;
-  x->pai=y;//?????
+  x->pai=y;
   atualiza_altura(T,x);
   atualiza_altura(T,y);
-  return x;//ou y?????
+  return y;
 }
 no* rot_simples_dir(arv* T, no*x){
   no* y=NULL;
@@ -197,19 +214,17 @@ no* rot_simples_dir(arv* T, no*x){
   if(x->pai==NULL){
     T->raiz=y;
   }
+  else if(x==x->pai->dir){
+      x->pai->dir=y;
+    }
   else{
-    if(x==x->pai->dir){
-      x->pai->dir=x;
+      x->pai->esq=y;
     }
-    else{
-      x->pai->esq=x;
-    }
-  }
   y->dir=x;
-  x->pai=y;//?????
+  x->pai=y;
   atualiza_altura(T,x);
   atualiza_altura(T,y);
-  return x;//ou y???
+  return y;
 }
 int atualiza_altura(arv* T,no* x){
   if(T==NULL){
@@ -241,7 +256,7 @@ int balanco(no* x){
   if(x->dir!=NULL){
     altDir=x->dir->altura;
   }
-  return altDir-altEsq;
+  return altEsq-altDir;
 }
 int consulta_no(arv* T,int cod_cli){
   if(T==NULL){
@@ -253,12 +268,14 @@ int consulta_no(arv* T,int cod_cli){
     //não existe
     return 0;
   }
+
+  return 1;
 }
 int impressao_nivel(no* raiz,int nivel){
   if(raiz==NULL){
     return 1;
   }
-  if(caminho_para_raiz(raiz)==nivel-1){//-1??????
+  if(caminho_para_raiz(raiz)==nivel){//-1??????
     printf("%d\n",raiz->cod_cli);
     return 1;
   }
@@ -308,6 +325,41 @@ int total_nos(no* raiz){
   int dir=total_nos(raiz->dir);
   int esq=total_nos(raiz->esq);
   return dir+esq+1;
+}
+no* remover_avl(arv* T,no* x,int cod_cli){
+  if(x==NULL){
+    return x;
+  }
+  if(cod_cli<x->cod_cli){
+  x->esq=remover_avl(T,x->esq,cod_cli);
+  }
+  else if(cod_cli>x->cod_cli){
+    x->dir=remover_avl(T,x->dir,cod_cli);
+  }
+  else{
+    if(x->esq==NULL){
+      x=x->dir;
+    }
+    else if(x->dir==NULL){
+      x=x->esq;
+    }
+    else{
+      no* y=minimo(x->dir);
+      x->cod_cli=y->cod_cli;
+      x->dir=remover_avl(T,x->dir,y->cod_cli);
+    }
+  }
+  if(x==NULL){
+    return x;
+  }
+  x->altura=x->esq->altura+1;
+  if(x->dir->altura+1  >  x->altura){
+    x->altura=x->dir->altura+1;
+  }
+  if(altura_no(x->esq)-altura_no(x->dir)==2 || altura_no(x->esq)-altura_no(x->dir)==-2){
+    balanceamento(T,x);
+  }
+  return x;
 }
 int remover_no(arv *T,no *z){
   if(T==NULL){
@@ -373,6 +425,7 @@ int imprimir_relatorio(arv *T){
     remover_no(T,T->raiz);
   }
   printf("-+- Fim relatorio -+-\n");
+  return 1;
 }
 int destruir_arv(arv* T){
   if(T==NULL){
