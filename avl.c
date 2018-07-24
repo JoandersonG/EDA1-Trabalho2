@@ -276,7 +276,7 @@ int impressao_nivel(no* raiz,int nivel){
     return 1;
   }
   if(caminho_para_raiz(raiz)==nivel){//-1??????
-    printf("%d\n",raiz->cod_cli);
+    printf("%d ",raiz->cod_cli);
     return 1;
   }
   impressao_nivel(raiz->esq,nivel);
@@ -289,6 +289,7 @@ int caminho_para_raiz(no* raiz){
   }
   int cont=1;
   while(raiz->pai!=NULL){
+    raiz = raiz->pai;
     cont++;
   }
   return cont;
@@ -298,7 +299,7 @@ int impressao_crescente(no* raiz){
     return 1;
   }
   impressao_crescente(raiz->esq);
-  printf("%d\n",raiz->cod_cli);
+  printf("%d ",raiz->cod_cli);
   impressao_crescente(raiz->dir);
   return 1;
 }
@@ -307,7 +308,7 @@ int impressao_decrescente(no* raiz){
     return 1;
   }
   impressao_decrescente(raiz->dir);
-  printf("%d\n",raiz->cod_cli);
+  printf("%d ",raiz->cod_cli);
   impressao_decrescente(raiz->esq);
   return 1;
 }
@@ -327,20 +328,23 @@ int total_nos(no* raiz){
   return dir+esq+1;
 }
 no* remover_avl(arv* T,no* x,int cod_cli){
+  no* aux=NULL;
   if(x==NULL){
     return x;
   }
   if(cod_cli<x->cod_cli){
-  x->esq=remover_avl(T,x->esq,cod_cli);
+    x->esq=remover_avl(T,x->esq,cod_cli);
   }
   else if(cod_cli>x->cod_cli){
     x->dir=remover_avl(T,x->dir,cod_cli);
   }
   else{
     if(x->esq==NULL){
+      aux=x;
       x=x->dir;
     }
     else if(x->dir==NULL){
+      aux=x;
       x=x->esq;
     }
     else{
@@ -359,7 +363,17 @@ no* remover_avl(arv* T,no* x,int cod_cli){
   if(altura_no(x->esq)-altura_no(x->dir)==2 || altura_no(x->esq)-altura_no(x->dir)==-2){
     balanceamento(T,x);
   }
-  return x;
+  return aux;
+}
+int remover_cliente(arv* T,no* x,int cod_cli){
+  if(T==NULL){
+    printf("Erro 1 em remover_cliente\n");
+    return -1;
+  }
+  x = remover_avl(T,x,cod_cli);
+  free(x);
+  x = NULL;
+  return 1;
 }
 int remover_no(arv *T,no *z){
   if(T==NULL){
@@ -422,7 +436,7 @@ int imprimir_relatorio(arv *T){
   printf("%d\n",aux);
   for (int i = 0; i < aux; i++) {
     printf("%d %d %d\n",T->raiz->cod_cli,T->raiz->qtd_op,T->raiz->saldo);
-    remover_no(T,T->raiz);
+    remover_avl(T,T->raiz,T->raiz->cod_cli);
   }
   printf("-+- Fim relatorio -+-\n");
   return 1;
@@ -432,7 +446,7 @@ int destruir_arv(arv* T){
     return 1;
   }
   while(total_nos(T->raiz)){
-    remover_no(T,T->raiz);
+    remover_avl(T,T->raiz,T->raiz->cod_cli);
   }
   free(T);
   return 1;

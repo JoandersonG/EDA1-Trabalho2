@@ -2,59 +2,21 @@
 #include "avl.h"
 
 int main(){
-  int nn, cod_cli, valor,op,aux;
-  char f,ord;
+  int  nn,cod_cli, valor,op,aux;
+  char f,ord,lixo;
   //int a,b,c;
   no* n=NULL;
   arv* T=NULL;
   T=criar_arv();
-  scanf("%d",&nn);
-  //while ((getchar()) != '\n');
+
+//  scanf("%c",&f);
+scanf("%d",&nn);
+  
   for (int i = 0; i < nn; i++) {
+//  while(1){
     while ((getchar()) != '\n');
     scanf("%c",&f);
-
-/*
-    switch(f){
-      case 'i':
-        scanf("%d%d%d",&cod_cli,&op,&valor);
-        elaborar_enviar_no(T,cod_cli,valor,op);
-        break;
-
-      case 'c':
-        scanf("%d",&cod_cli);
-        aux=consulta_no(T,cod_cli);
-        if(aux==0){ //não existe
-          printf("nao ");
-        }
-        printf("existe no com chave: %d\n",cod_cli);
-        break;
-      case 'p':
-        scanf("%c",&ord);
-        n=raiz_arv(T);
-        if(ord=='c'){
-          impressao_crescente(n);
-        }
-        else{
-          impressao_decrescente(n);
-        }
-        break;
-      case 'n':
-        scanf("%d",&aux);
-        printf("Teste n, ok\n");
-        n=raiz_arv(T);
-        impressao_nivel(n,aux);
-        break;
-      case 'h':
-        n=raiz_arv(T);
-        aux=altura_no(n);
-        printf("%d\n",aux);
-        break;
-      case 'f':
-        imprimir_relatorio(T);
-    }
-*/
-
+    
     if(f=='i'){
     //  printf("Entrou em i\n");
     //  while ((getchar()) != '\n');
@@ -77,9 +39,7 @@ int main(){
       continue;
     }
     if(f=='p'){
-    //  while ((getchar()) != '\n');
-      scanf("%c",&ord);
-
+      scanf("%c%c",&lixo,&ord);
       n=raiz_arv(T);
       if(ord=='c'){
         impressao_crescente(n);
@@ -87,6 +47,8 @@ int main(){
       else{
         impressao_decrescente(n);
       }
+      printf("\n");
+      
       //printf("Entrei no p\n");
       continue;
     }
@@ -107,12 +69,21 @@ int main(){
       printf("%d\n",aux);
       continue;
     }
+    if(f=='r'){
+      scanf("%d",&aux);
+      n=raiz_arv(T);
+      remover_cliente(T,n,aux);
+      continue;
+    }
     if(f=='f'){
       imprimir_relatorio(T);
+      break;
     }
 
-
+  //  scanf("%c",&f);
+  //  while ((getchar()) != '\n');
   }
+  destruir_arv(T);
   n=NULL;
   T=NULL;
   return 0;

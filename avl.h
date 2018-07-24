@@ -23,6 +23,7 @@ int caminho_para_raiz(no* raiz);
 int impressao_crescente(no* raiz);
 int impressao_decrescente(no* raiz);
 no* raiz_arv(arv* T);
+int remover_cliente(arv* T,no* x,int cod_cli);
 no* remover_avl(arv* T,no* x,int cod_cli);
 int total_nos(no* raiz);
 int remover_no(arv *T,no *z);
