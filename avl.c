@@ -474,7 +474,7 @@ int impressao_nivel(no* raiz,int nivel){
   }
   int cont=0;
   if(caminho_para_raiz(raiz)==nivel){
-    printf("%d ",raiz->cod_cli);
+    printf("%d\n",raiz->cod_cli);
     cont++;
     return cont;
   }

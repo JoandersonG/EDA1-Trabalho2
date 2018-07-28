@@ -2,7 +2,7 @@
 #include "avl.h"
 
 int main(){
-  int  cod_cli, valor,op,aux,aux2=0;
+  int  cod_cli, valor,op,aux;
   char f,ord;
   //int a,b,c;
   no* n=NULL;
@@ -58,8 +58,8 @@ int main(){
     //  printf("Aux: %d\n",aux);
       n=raiz_arv(T);
 
-      aux2=impressao_nivel(n,aux);
-      if(aux2) printf("\n");
+      impressao_nivel(n,aux);
+    //  if(aux2) printf("\n");
       continue;
     }
     if(f=='h'){
