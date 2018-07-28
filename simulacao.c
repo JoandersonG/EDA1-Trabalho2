@@ -2,8 +2,8 @@
 #include "avl.h"
 
 int main(){
-  int  nn,cod_cli, valor,op,aux;
-  char f,ord,lixo;
+  int  cod_cli, valor,op,aux,aux2=0;
+  char f,ord;
   //int a,b,c;
   no* n=NULL;
   arv* T=NULL;
@@ -39,7 +39,7 @@ int main(){
       continue;
     }
     if(f=='p'){
-      scanf(" %c %c",&lixo,&ord);
+      scanf(" %c",&ord);
       n=raiz_arv(T);
       if(ord=='c'){
         impressao_crescente(n);
@@ -47,7 +47,6 @@ int main(){
       else{
         impressao_decrescente(n);
       }
-      printf("\n");
 
       //printf("Entrei no p\n");
       continue;
@@ -59,15 +58,15 @@ int main(){
     //  printf("Aux: %d\n",aux);
       n=raiz_arv(T);
 
-      impressao_nivel(n,aux);
-      printf("\n");
+      aux2=impressao_nivel(n,aux);
+      if(aux2) printf("\n");
       continue;
     }
     if(f=='h'){
 
       n=raiz_arv(T);
       aux=altura_no(n);
-      printf(" %d\n",aux);
+      printf("%d\n",aux);
 
       continue;
     }
@@ -81,7 +80,7 @@ int main(){
       imprimir_relatorio(T);
       break;
     }
-  while ((getchar()) != '\n');
+  //while ((getchar()) != '\n');
   //  scanf("%c",&f);
   //  while ((getchar()) != '\n');
   }

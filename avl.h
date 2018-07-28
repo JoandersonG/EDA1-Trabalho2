@@ -9,7 +9,7 @@ arv* criar_arv();
 int elaborar_enviar_no(arv* T,int cod_cli,int valor,int op);
 no* busca(no* raiz,int cod_cli);
 no* inserir_no(arv *T, no*x, no*z);
-int balanceamento(arv *T,no *x);
+no* balanceamento(arv *T,no *x);
 no* rot_dupla_esq(arv *T, no* x);
 no* rot_dupla_dir(arv *T, no* x);
 no* rot_simples_esq(arv* T, no*x);

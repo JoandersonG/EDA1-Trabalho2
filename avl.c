@@ -84,7 +84,7 @@ no* remover_avl(arv* T,no* x,int cod_cli){
   no* aux=NULL;
   if(T->raiz->cod_cli==cod_cli && T->raiz->esq==NULL && T->raiz->dir==NULL){
     //só há a raiz e é ela q quero remover;
-    printf("entrou aqui\n");
+  //  printf("entrou aqui\n");
     reg=T->raiz;
     T->raiz=NULL;
     return reg;
@@ -115,11 +115,17 @@ no* remover_avl(arv* T,no* x,int cod_cli){
         //sustitui x por x->esq:
     //    printf("Esquerda de %d não é NULL\n",x->cod_cli);
         x->esq->pai=x->pai;
-        if(x->pai->esq==x){
-          x->pai->esq=x->esq;
+        if(x->pai!=NULL){
+          if(x->pai->esq==x){
+            x->pai->esq=x->esq;
+          }
+          else{
+            x->pai->dir=x->esq;
+          }
         }
         else{
-          x->pai->dir=x->esq;
+          //é raiz
+          T->raiz=x->esq;
         }
         x->esq=NULL;
         x->pai=NULL;
@@ -141,11 +147,16 @@ no* remover_avl(arv* T,no* x,int cod_cli){
     else if(x->esq==NULL){
       //sem filhos à esquerda e tem à dir
     //  printf("%d Sem filhos à esq e possui à direita\n",x->cod_cli);
-      if(x->pai->esq==x){
-        x->pai->esq=x->dir;
+      if(x->pai!=NULL){
+        if(x->pai->esq==x){
+          x->pai->esq=x->dir;
+        }
+        else{
+          x->pai->dir=x->dir;
+        }
       }
       else{
-        x->pai->dir=x->dir;
+        T->raiz=x->dir;
       }
       x->dir->pai=x->pai;
       x->dir=NULL;
@@ -198,13 +209,13 @@ no* remover_avl(arv* T,no* x,int cod_cli){
       //  printf("Entrou no while\n");
         atualiza_altura(T,aux);
         if(balanco(aux)==2 || balanco(aux)==-2){
-          balanceamento(T,aux);
+          aux=balanceamento(T,aux);
         }
         aux=aux->pai;
       }//saio no antigo filho do nó removido
       atualiza_altura(T,aux);
       if(balanco(aux)==2 || balanco(aux)==-2){
-        balanceamento(T,aux);
+        aux=balanceamento(T,aux);
       }
 /*
 */
@@ -238,9 +249,13 @@ no* remover_avl(arv* T,no* x,int cod_cli){
       //balancear... e altura e tals
     }
   }
+  //printf("Altura de %d: %d\n",x->cod_cli,x->altura);
   atualiza_altura(T,x);
+  //printf("Altura de %d: %d\n",x->cod_cli,x->altura);
+  //printf("Altura de %d: %d\n",x->cod_cli,x->altura);
   if(balanco(x)==2 || balanco(x)==-2){
-    balanceamento(T,x);
+  //  printf("entrou em balanceamento com %d\n",x->cod_cli);
+    x=balanceamento(T,x);
   }
   return reg;
 }
@@ -261,6 +276,7 @@ no* inserir_no(arv *T, no*x, no*z){
   }
   if(z->cod_cli < x->cod_cli){
     if(x->esq==NULL){
+    //  printf("Entrou aqui com cod_cli: %d\n",z->cod_cli);
       x->esq=z;
       z->pai=x;
       z->altura=1;
@@ -281,14 +297,14 @@ no* inserir_no(arv *T, no*x, no*z){
   }
   atualiza_altura(T,x);
   if(balanco(x)==2 || balanco(x)==-2){
-    balanceamento(T,x);
+    x=balanceamento(T,x);
   }
   return x;
 }
-int balanceamento(arv* T,no *x){
+no* balanceamento(arv* T,no *x){
   if(x==NULL){
     printf("Erro 2 em balanceamento\n");
-    return -1;
+    return x;
   }
   no* y;
   if(balanco(x)==-2){
@@ -309,7 +325,7 @@ int balanceamento(arv* T,no *x){
       x=rot_simples_dir(T,x);
     }
   }
-  return 1;//ou x?????
+  return x;//ou x?????
 
 
   //////////////////////////
@@ -404,7 +420,15 @@ int atualiza_altura(arv* T,no* x){
     return 0;
   }
   if(x==NULL) return 0;
+//  int alt=1;
   x->altura=altura_no(x);
+/*  if(x->esq!=NULL)
+    alt=x->esq->altura+1;
+  if(x->dir!=NULL && x->dir->altura > alt){
+    alt=x->dir->altura+1;
+  }
+  x->altura=alt;
+  */
   return 1;
 }
 int altura_no(no* raiz){
@@ -446,17 +470,17 @@ int consulta_no(arv* T,int cod_cli){
 }
 int impressao_nivel(no* raiz,int nivel){
   if(raiz==NULL){
-    return 1;
+    return 0;
   }
-
-  if(caminho_para_raiz(raiz)==nivel){//-1??????
+  int cont=0;
+  if(caminho_para_raiz(raiz)==nivel){
     printf("%d ",raiz->cod_cli);
-    return 1;
+    cont++;
+    return cont;
   }
-  impressao_nivel(raiz->esq,nivel);
-  impressao_nivel(raiz->dir,nivel);
-
-  return 1;
+  cont+=impressao_nivel(raiz->esq,nivel);
+  cont+=impressao_nivel(raiz->dir,nivel);
+  return cont;
 }
 int caminho_para_raiz(no* raiz){
   if(raiz==NULL){
@@ -474,7 +498,7 @@ int impressao_crescente(no* raiz){
     return 1;
   }
   impressao_crescente(raiz->esq);
-  printf("%d ",raiz->cod_cli);
+  printf("%d %d %d\n",raiz->cod_cli,raiz->qtd_op,raiz->saldo);
   impressao_crescente(raiz->dir);
   return 1;
 }
@@ -483,7 +507,7 @@ int impressao_decrescente(no* raiz){
     return 1;
   }
   impressao_decrescente(raiz->dir);
-  printf("%d ",raiz->cod_cli);
+  printf("%d %d %d\n",raiz->cod_cli,raiz->qtd_op,raiz->saldo);
   impressao_decrescente(raiz->esq);
   return 1;
 }
@@ -548,10 +572,15 @@ int remover_cliente(arv* T,no* x,int cod_cli){
     return -1;
   }
 //  if(T->raiz->cod_cli==cod_cli)
-  x = remover_avl(T,x,cod_cli);
-  if(x==T->raiz)
-  free(x);
-  x = NULL;
+  no* aux=busca(x,cod_cli);
+  if(x==NULL){
+    return 1;
+  }
+  aux = remover_avl(T,x,cod_cli);
+  //if(x==T->raiz)
+//  printf("removendo: %d\n",x->cod_cli);
+  free(aux);
+  aux = NULL;
   return 1;
 }
 int remover_no(arv *T,no *z){
@@ -610,12 +639,12 @@ int imprimir_relatorio(arv *T){
     printf("Erro 1 em imprimir_relatorio\n");
     return 1;
   }
-  printf("“-+- Inicio relatorio -+-\n");
+  printf("-+- Inicio relatorio -+-\n");
   int aux=total_nos(T->raiz);
   printf("%d\n",aux);
   for (int i = 0; i < aux; i++) {
     printf("%d %d %d\n",T->raiz->cod_cli,T->raiz->qtd_op,T->raiz->saldo);
-    remover_avl(T,T->raiz,T->raiz->cod_cli);
+    remover_cliente(T,T->raiz,T->raiz->cod_cli);
   }
   printf("-+- Fim relatorio -+-\n");
   return 1;

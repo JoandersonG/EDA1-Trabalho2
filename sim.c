@@ -39,7 +39,7 @@ scanf("%d",&nn);
       continue;
     }
     if(f=='p'){
-      scanf("%c%c",&lixo,&ord);
+      scanf("%c",&ord);
       n=raiz_arv(T);
       if(ord=='c'){
         impressao_crescente(n);
