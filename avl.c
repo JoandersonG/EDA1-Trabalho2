@@ -74,6 +74,178 @@ no* busca(no* raiz,int cod_cli){
     return busca(raiz->esq,cod_cli);
   }
 }
+
+
+no* remover_avl(arv* T,no* x,int cod_cli){
+  if(x==NULL){
+    return x;
+  }
+  no* reg=NULL;
+  no* aux=NULL;
+  if(T->raiz->cod_cli==cod_cli && T->raiz->esq==NULL && T->raiz->dir==NULL){
+    //só há a raiz e é ela q quero remover;
+    printf("entrou aqui\n");
+    reg=T->raiz;
+    T->raiz=NULL;
+    return reg;
+  }
+  if(x->cod_cli  >  cod_cli){
+  //  printf("%d é maior que %d\n",x->cod_cli,cod_cli);
+    reg=remover_avl(T,x->esq,cod_cli);
+  }
+  else if(x->cod_cli  <  cod_cli){
+  //  printf("%d é menor que %d\n",x->cod_cli,cod_cli);
+    reg=remover_avl(T,x->dir,cod_cli);
+  }
+  else{// encontrei
+    reg=x;
+  //  printf("encontrei %d\n",x->cod_cli);
+    if(x->dir==NULL){
+      if(x->esq==NULL){//folha
+    //    printf("É uma folha\n");
+        if(x->pai->esq==x){
+          x->pai->esq=NULL;
+        }
+        else{
+          x->pai->dir=NULL;
+        }
+        x->pai=NULL;
+      }
+      else{
+        //sustitui x por x->esq:
+    //    printf("Esquerda de %d não é NULL\n",x->cod_cli);
+        x->esq->pai=x->pai;
+        if(x->pai->esq==x){
+          x->pai->esq=x->esq;
+        }
+        else{
+          x->pai->dir=x->esq;
+        }
+        x->esq=NULL;
+        x->pai=NULL;
+      }
+
+      /////////////////////////////////////////////////////
+  /*    else if(x->pai->esq==x){//sem filhos à direita
+        x->pai->esq=x->esq;
+      }
+      else{
+        x->pai->dir=x->esq;
+      }
+      printf("Não tem filhos à direita\n");
+      x->esq->pai=x->pai;
+      x->esq=NULL;
+      x->pai=NULL;
+  */    //==================================================
+    }
+    else if(x->esq==NULL){
+      //sem filhos à esquerda e tem à dir
+    //  printf("%d Sem filhos à esq e possui à direita\n",x->cod_cli);
+      if(x->pai->esq==x){
+        x->pai->esq=x->dir;
+      }
+      else{
+        x->pai->dir=x->dir;
+      }
+      x->dir->pai=x->pai;
+      x->dir=NULL;
+      x->pai=NULL;
+    }
+    else{//possui dois filhos:
+  //    printf("%d Possui dois filhos\n",x->cod_cli);
+      x=x->dir;
+
+      while(x->esq!=NULL){
+        x=x->esq;
+      }//tenho o endereço do sucessor de x em x e endereço de x em reg;
+
+      if(reg->pai!=NULL){
+        if(reg->pai->esq==reg){
+          reg->pai->esq=x;
+        }
+        else{
+          reg->pai->dir=x;
+        }
+      }
+      //dois casos:
+      //1:
+      if(x==reg->dir){//x é elemento à direita de reg
+        x->pai=reg->pai;
+        x->esq=reg->esq;
+        if(x->esq!=NULL) x->esq->pai=x;
+      }
+      //2:
+      else{//x é elemento de reg, com mais de um nível de diferença
+        aux=x->pai;
+        x->pai->esq=x->dir;
+        if(x->dir!=NULL) x->dir->pai=x->pai;
+        x->pai=reg->pai;
+        x->esq=reg->esq;
+        if(x->esq!=NULL) x->esq->pai=x;
+        x->dir=reg->dir;
+        reg->dir->pai=x;
+        reg->esq->pai=x;
+      }
+      if(x->pai==NULL){
+        //é raiz
+        T->raiz=x;
+      }
+      reg->esq=NULL;
+      reg->dir=NULL;
+      reg->pai=NULL;
+
+      while (aux!=NULL && aux->pai!=NULL && aux==aux->pai->esq) {
+      //  printf("Entrou no while\n");
+        atualiza_altura(T,aux);
+        if(balanco(aux)==2 || balanco(aux)==-2){
+          balanceamento(T,aux);
+        }
+        aux=aux->pai;
+      }//saio no antigo filho do nó removido
+      atualiza_altura(T,aux);
+      if(balanco(aux)==2 || balanco(aux)==-2){
+        balanceamento(T,aux);
+      }
+/*
+*/
+      ////////////////////////////////////////////////////
+/*      aux=x->pai;
+      if(x->pai->esq==x){
+        x->pai->esq=x->dir;
+        if(x->dir!=NULL)   x->dir->pai=x->pai;
+      }
+
+      //coloco o sucessor no lugar do reg:
+      if(reg->dir!=x){
+        x->dir=reg->dir;
+        reg->dir->pai=x;
+      }
+      x->pai=reg->pai;
+      if(reg->pai!=NULL){
+        if(reg->pai->esq==reg){
+          reg->pai->esq=x;
+        }
+        else{
+          reg->pai->dir=x;
+        }
+      }
+      x->esq=reg->esq;
+      reg->esq->pai=x;
+      reg->esq=NULL;
+      reg->dir=NULL;
+      reg->pai=NULL;
+*/
+      //balancear... e altura e tals
+    }
+  }
+  atualiza_altura(T,x);
+  if(balanco(x)==2 || balanco(x)==-2){
+    balanceamento(T,x);
+  }
+  return reg;
+}
+
+
 no* inserir_no(arv *T, no*x, no*z){
   if(T==NULL){
     printf("erro 1 em inserir_no\n");
@@ -231,6 +403,7 @@ int atualiza_altura(arv* T,no* x){
     printf("Erro 1 em atualiza_altura\n");
     return 0;
   }
+  if(x==NULL) return 0;
   x->altura=altura_no(x);
   return 1;
 }
@@ -275,12 +448,14 @@ int impressao_nivel(no* raiz,int nivel){
   if(raiz==NULL){
     return 1;
   }
+
   if(caminho_para_raiz(raiz)==nivel){//-1??????
     printf("%d ",raiz->cod_cli);
     return 1;
   }
   impressao_nivel(raiz->esq,nivel);
   impressao_nivel(raiz->dir,nivel);
+
   return 1;
 }
 int caminho_para_raiz(no* raiz){
@@ -327,6 +502,7 @@ int total_nos(no* raiz){
   int esq=total_nos(raiz->esq);
   return dir+esq+1;
 }
+/*
 no* remover_avl(arv* T,no* x,int cod_cli){
   no* aux=NULL;
   if(x==NULL){
@@ -365,12 +541,15 @@ no* remover_avl(arv* T,no* x,int cod_cli){
   }
   return aux;
 }
+*/
 int remover_cliente(arv* T,no* x,int cod_cli){
   if(T==NULL){
     printf("Erro 1 em remover_cliente\n");
     return -1;
   }
+//  if(T->raiz->cod_cli==cod_cli)
   x = remover_avl(T,x,cod_cli);
+  if(x==T->raiz)
   free(x);
   x = NULL;
   return 1;
@@ -446,7 +625,7 @@ int destruir_arv(arv* T){
     return 1;
   }
   while(total_nos(T->raiz)){
-    remover_avl(T,T->raiz,T->raiz->cod_cli);
+    remover_cliente(T,T->raiz,T->raiz->cod_cli);
   }
   free(T);
   return 1;
