@@ -1,3 +1,9 @@
+
+#  Joanderson Gonçalves Santos
+#  Tayná Valverde Rosa
+#  Rafael Baretto Serejo Farias
+
+
 simulacao: simulacao.o avl.o
 	gcc-7 simulacao.o avl.o -o simulacao
 simulacao.o: simulacao.c

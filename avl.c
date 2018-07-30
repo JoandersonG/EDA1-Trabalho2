@@ -1,3 +1,9 @@
+
+//  Joanderson Gonçalves Santos
+//  Tayná Valverde Rosa
+//  Rafael Baretto Serejo Farias
+
+
 #include "avl.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,7 +19,6 @@ struct node{
 };
 struct arvore{
   struct node* raiz;
-  //int tamanho;//quantidade de nós
   int alt;//altura
 };
 
@@ -58,6 +63,7 @@ int elaborar_enviar_no(arv* T,int cod_cli,int valor,int op){
   n->dir=NULL;
   n->altura=1;
   inserir_no(T,T->raiz,n);
+  T->alt++;
   return 1;
 }
 no* busca(no* raiz,int cod_cli){
@@ -84,25 +90,20 @@ no* remover_avl(arv* T,no* x,int cod_cli){
   no* aux=NULL;
   if(T->raiz->cod_cli==cod_cli && T->raiz->esq==NULL && T->raiz->dir==NULL){
     //só há a raiz e é ela q quero remover;
-  //  printf("entrou aqui\n");
     reg=T->raiz;
     T->raiz=NULL;
     return reg;
   }
   if(x->cod_cli  >  cod_cli){
-  //  printf("%d é maior que %d\n",x->cod_cli,cod_cli);
     reg=remover_avl(T,x->esq,cod_cli);
   }
   else if(x->cod_cli  <  cod_cli){
-  //  printf("%d é menor que %d\n",x->cod_cli,cod_cli);
     reg=remover_avl(T,x->dir,cod_cli);
   }
   else{// encontrei
     reg=x;
-  //  printf("encontrei %d\n",x->cod_cli);
     if(x->dir==NULL){
       if(x->esq==NULL){//folha
-    //    printf("É uma folha\n");
         if(x->pai->esq==x){
           x->pai->esq=NULL;
         }
@@ -113,7 +114,6 @@ no* remover_avl(arv* T,no* x,int cod_cli){
       }
       else{
         //sustitui x por x->esq:
-    //    printf("Esquerda de %d não é NULL\n",x->cod_cli);
         x->esq->pai=x->pai;
         if(x->pai!=NULL){
           if(x->pai->esq==x){
@@ -130,23 +130,8 @@ no* remover_avl(arv* T,no* x,int cod_cli){
         x->esq=NULL;
         x->pai=NULL;
       }
-
-      /////////////////////////////////////////////////////
-  /*    else if(x->pai->esq==x){//sem filhos à direita
-        x->pai->esq=x->esq;
-      }
-      else{
-        x->pai->dir=x->esq;
-      }
-      printf("Não tem filhos à direita\n");
-      x->esq->pai=x->pai;
-      x->esq=NULL;
-      x->pai=NULL;
-  */    //==================================================
     }
     else if(x->esq==NULL){
-      //sem filhos à esquerda e tem à dir
-    //  printf("%d Sem filhos à esq e possui à direita\n",x->cod_cli);
       if(x->pai!=NULL){
         if(x->pai->esq==x){
           x->pai->esq=x->dir;
@@ -163,7 +148,6 @@ no* remover_avl(arv* T,no* x,int cod_cli){
       x->pai=NULL;
     }
     else{//possui dois filhos:
-  //    printf("%d Possui dois filhos\n",x->cod_cli);
       x=x->dir;
 
       while(x->esq!=NULL){
@@ -206,7 +190,6 @@ no* remover_avl(arv* T,no* x,int cod_cli){
       reg->pai=NULL;
 
       while (aux!=NULL && aux->pai!=NULL && aux==aux->pai->esq) {
-      //  printf("Entrou no while\n");
         atualiza_altura(T,aux);
         if(balanco(aux)==2 || balanco(aux)==-2){
           aux=balanceamento(T,aux);
@@ -217,44 +200,10 @@ no* remover_avl(arv* T,no* x,int cod_cli){
       if(balanco(aux)==2 || balanco(aux)==-2){
         aux=balanceamento(T,aux);
       }
-/*
-*/
-      ////////////////////////////////////////////////////
-/*      aux=x->pai;
-      if(x->pai->esq==x){
-        x->pai->esq=x->dir;
-        if(x->dir!=NULL)   x->dir->pai=x->pai;
-      }
-
-      //coloco o sucessor no lugar do reg:
-      if(reg->dir!=x){
-        x->dir=reg->dir;
-        reg->dir->pai=x;
-      }
-      x->pai=reg->pai;
-      if(reg->pai!=NULL){
-        if(reg->pai->esq==reg){
-          reg->pai->esq=x;
-        }
-        else{
-          reg->pai->dir=x;
-        }
-      }
-      x->esq=reg->esq;
-      reg->esq->pai=x;
-      reg->esq=NULL;
-      reg->dir=NULL;
-      reg->pai=NULL;
-*/
-      //balancear... e altura e tals
     }
   }
-  //printf("Altura de %d: %d\n",x->cod_cli,x->altura);
   atualiza_altura(T,x);
-  //printf("Altura de %d: %d\n",x->cod_cli,x->altura);
-  //printf("Altura de %d: %d\n",x->cod_cli,x->altura);
   if(balanco(x)==2 || balanco(x)==-2){
-  //  printf("entrou em balanceamento com %d\n",x->cod_cli);
     x=balanceamento(T,x);
   }
   return reg;
@@ -267,16 +216,13 @@ no* inserir_no(arv *T, no*x, no*z){
     no* erro=NULL;
     return erro;
   }
-  //printf("Entrou aqui antes de dar erro\n");
   if(T->raiz==NULL){
     //significa que a arv está vazia
-    //printf("árvore estava vazia, inseri %d\n",z->cod_cli);
     T->raiz=z;
     return x;
   }
   if(z->cod_cli < x->cod_cli){
     if(x->esq==NULL){
-    //  printf("Entrou aqui com cod_cli: %d\n",z->cod_cli);
       x->esq=z;
       z->pai=x;
       z->altura=1;
@@ -325,22 +271,7 @@ no* balanceamento(arv* T,no *x){
       x=rot_simples_dir(T,x);
     }
   }
-  return x;//ou x?????
-
-
-  //////////////////////////
-  /*
-  else{
-    no* y=x->esq;
-    if(balanco(y)==-1){
-      x=rot_dupla_dir(T,x);
-    }
-    else{
-      x=rot_simples_dir(T,x);
-    }
-  }
-  return 1;
-  */
+  return x;
 }
 no* rot_dupla_esq(arv *T, no* x){
   if(T==NULL){
@@ -420,15 +351,7 @@ int atualiza_altura(arv* T,no* x){
     return 0;
   }
   if(x==NULL) return 0;
-//  int alt=1;
   x->altura=altura_no(x);
-/*  if(x->esq!=NULL)
-    alt=x->esq->altura+1;
-  if(x->dir!=NULL && x->dir->altura > alt){
-    alt=x->dir->altura+1;
-  }
-  x->altura=alt;
-  */
   return 1;
 }
 int altura_no(no* raiz){
@@ -465,7 +388,6 @@ int consulta_no(arv* T,int cod_cli){
     //não existe
     return 0;
   }
-
   return 1;
 }
 int impressao_nivel(no* raiz,int nivel){
@@ -526,46 +448,6 @@ int total_nos(no* raiz){
   int esq=total_nos(raiz->esq);
   return dir+esq+1;
 }
-/*
-no* remover_avl(arv* T,no* x,int cod_cli){
-  no* aux=NULL;
-  if(x==NULL){
-    return x;
-  }
-  if(cod_cli<x->cod_cli){
-    x->esq=remover_avl(T,x->esq,cod_cli);
-  }
-  else if(cod_cli>x->cod_cli){
-    x->dir=remover_avl(T,x->dir,cod_cli);
-  }
-  else{
-    if(x->esq==NULL){
-      aux=x;
-      x=x->dir;
-    }
-    else if(x->dir==NULL){
-      aux=x;
-      x=x->esq;
-    }
-    else{
-      no* y=minimo(x->dir);
-      x->cod_cli=y->cod_cli;
-      x->dir=remover_avl(T,x->dir,y->cod_cli);
-    }
-  }
-  if(x==NULL){
-    return x;
-  }
-  x->altura=x->esq->altura+1;
-  if(x->dir->altura+1  >  x->altura){
-    x->altura=x->dir->altura+1;
-  }
-  if(altura_no(x->esq)-altura_no(x->dir)==2 || altura_no(x->esq)-altura_no(x->dir)==-2){
-    balanceamento(T,x);
-  }
-  return aux;
-}
-*/
 int remover_cliente(arv* T,no* x,int cod_cli){
   if(T==NULL){
     printf("Erro 1 em remover_cliente\n");
@@ -579,34 +461,9 @@ int remover_cliente(arv* T,no* x,int cod_cli){
   aux = remover_avl(T,x,cod_cli);
   //if(x==T->raiz)
 //  printf("removendo: %d\n",x->cod_cli);
+  T->alt--;
   free(aux);
   aux = NULL;
-  return 1;
-}
-int remover_no(arv *T,no *z){
-  if(T==NULL){
-    printf("Erro 1 em remover_no\n");
-    return -1;
-  }
-  if(z->esq==NULL){
-    transplante(T,z,z->dir);
-  }
-  else if(z->dir==NULL){
-    transplante(T,z,z->esq);
-  }
-  else{
-    no* y;
-    y=minimo(z->dir);
-    if(y->pai!=z){
-      transplante(T,y,y->dir);
-      y->dir=z->dir;
-      y->dir->pai=y;
-    }
-    transplante(T,z,y);
-    y->esq=z->esq;
-    y->esq->pai=y;
-  }
-  free(z);
   return 1;
 }
 no* minimo(no *x){

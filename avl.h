@@ -1,3 +1,9 @@
+
+//  Joanderson Gonçalves Santos
+//  Tayná Valverde Rosa
+//  Rafael Baretto Serejo Farias
+
+
 #ifndef avl_h
 #define avl_h
 #include "avl.h"
@@ -26,7 +32,6 @@ no* raiz_arv(arv* T);
 int remover_cliente(arv* T,no* x,int cod_cli);
 no* remover_avl(arv* T,no* x,int cod_cli);
 int total_nos(no* raiz);
-int remover_no(arv *T,no *z);
 no* minimo(no *x);
 int transplante(arv* T,no* z, no* y);
 int imprimir_relatorio(arv *T);
